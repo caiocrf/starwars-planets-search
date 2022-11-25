@@ -1,9 +1,10 @@
 import React from 'react';
 import './App.css';
+import Tabel from './components/Table';
 
 function App() {
   return (
-    <span>BRASIL HEXAA!!!!!!</span>
+    <Tabel />
   );
 }
 
