@@ -31,7 +31,7 @@ function Table() {
   return (
     <div>
       <form>
-        <input type="text" ata-testid="name-filter" onChange={ getName } />
+        <input type="text" data-testid="name-filter" onChange={ getName } />
       </form>
       <table>
         <tr>
