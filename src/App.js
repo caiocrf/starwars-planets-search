@@ -4,7 +4,10 @@ import Tabel from './components/Table';
 
 function App() {
   return (
-    <Tabel />
+    <>
+      <h1>STARTWARS</h1>
+      <Tabel />
+    </>
   );
 }
 
