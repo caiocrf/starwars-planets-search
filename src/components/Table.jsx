@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import planetListAPI from '../services/PlanetListAPI';
 
 function Table() {
+  const tableinfo = ['surface_water', 'rotation_period', 'diameter',
+    'orbital_period', 'population'];
   const [planet, setPlanet] = useState([]);
   const [filterPlanetName, setFilterPlanetName] = useState([]);
   const [namePlanet, setnamePlanet] = useState('');
   const [column, setColumn] = useState('population');
   const [operator, setOperator] = useState('maior que');
   const [quantity, setQuantity] = useState(0);
+  const [everyTypes, setEveryTypes] = useState(tableinfo);
+  const [filterTypes, setFilterTypes] = useState([]);
+  const [ifFilter, setIfFilter] = useState(0);
 
   const getApi = async () => {
     setPlanet(await planetListAPI());
@@ -57,16 +62,67 @@ function Table() {
       return setFilterPlanetName(filter);
     }
   };
+
+  const filterHandleChangeNumber = () => {
+    const valueTypesfilters = filterTypes;
+    const valueFilter = {
+      column,
+      operator,
+      quantity,
+    };
+    valueTypesfilters.push(valueFilter);
+    setFilterTypes(valueTypesfilters);
+
+    const filteringAll = everyTypes.filter((planetao) => planetao !== column);
+    setEveryTypes(filteringAll);
+    setColumn(filteringAll[0]);
+
+    filterHandleChange();
+  };
+
+  const deleteHandle = (type) => {
+    setFilterPlanetName(planet);
+    const filter = filterTypes.filter((e) => e.column !== type);
+    const filtering = everyTypes;
+    filtering.push(type);
+    setEveryTypes(filtering);
+    setFilterTypes(filter);
+    setIfFilter(ifFilter + 1);
+  };
+
+  const deleteHandleAll = () => {
+    setFilterPlanetName(planet);
+    setEveryTypes(tableinfo);
+    setFilterTypes([]);
+    setIfFilter(ifFilter + 1);
+  };
+
+  useEffect(() => {
+    filterTypes.forEach((ele) => {
+      if (ele.operator === 'maior que') {
+        const filt = filterPlanetName
+          .filter((e) => +e[ele.column] > +ele.quantity);
+        return setFilterPlanetName(filt);
+      }
+      if (ele.operator === 'menor que') {
+        const filt = filterPlanetName
+          .filter((e) => +e[ele.column] < +ele.quantity);
+        return setFilterPlanetName(filt);
+      }
+      if (ele.operator === 'igual a') {
+        const filt = filterPlanetName
+          .filter((e) => e[ele.column] === +ele.quantity);
+        return setFilterPlanetName(filt);
+      }
+    });
+  });
+
   return (
     <div>
       <form>
         <input type="text" data-testid="name-filter" onChange={ getName } />
         <select data-testid="column-filter" onClick={ columnOpition }>
-          <option value="population">population</option>
-          <option value="orbital_period">orbital_period</option>
-          <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
-          <option value="surface_water">surface_water</option>
+          {everyTypes.map((ele) => <option key={ ele } value={ ele }>{ele}</option>)}
         </select>
         <select data-testid="comparison-filter" onClick={ operatorOpition }>
           <option value="maior que">maior que</option>
@@ -82,11 +138,33 @@ function Table() {
         <button
           data-testid="button-filter"
           type="button"
-          onClick={ filterHandleChange }
+          onClick={ filterHandleChangeNumber }
         >
           Filter
         </button>
       </form>
+      {filterTypes.map((filte) => (
+        <div key={ filte.column } data-testid="filter">
+          <p>
+            {filte.column}
+          </p>
+          <button
+            type="button"
+            onClick={ () => deleteHandle(filte.column) }
+            data-testid="button-remove-filters"
+          >
+            Remover
+          </button>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        data-testid="button-remove-filters"
+        onClick={ deleteHandleAll }
+      >
+        Remover Tudo
+      </button>
       <table>
         <tr>
           <th>Name </th>
@@ -103,21 +181,21 @@ function Table() {
           <th>Edited </th>
           <th>URL </th>
         </tr>
-        {filterPlanetName.map((element) => (
-          <tr key={ element.name }>
-            <td>{element.name}</td>
-            <td>{element.rotation_period}</td>
-            <td>{element.orbital_period}</td>
-            <td>{element.diameter}</td>
-            <td>{element.climate}</td>
-            <td>{element.gravity}</td>
-            <td>{element.terrain}</td>
-            <td>{element.surface_water}</td>
-            <td>{element.population}</td>
-            <td>{element.films.map((e) => `${e}`)}</td>
-            <td>{element.created}</td>
-            <td>{element.edited}</td>
-            <td>{element.url}</td>
+        {filterPlanetName.map((planeta) => (
+          <tr key={ planeta.name }>
+            <td>{planeta.name}</td>
+            <td>{planeta.rotation_period}</td>
+            <td>{planeta.orbital_period}</td>
+            <td>{planeta.diameter}</td>
+            <td>{planeta.climate}</td>
+            <td>{planeta.gravity}</td>
+            <td>{planeta.terrain}</td>
+            <td>{planeta.surface_water}</td>
+            <td>{planeta.population}</td>
+            <td>{planeta.films.map((e) => `${e}`)}</td>
+            <td>{planeta.created}</td>
+            <td>{planeta.edited}</td>
+            <td>{planeta.url}</td>
           </tr>
         ))}
       </table>
