@@ -1,13 +1,12 @@
 import React from 'react';
-import './App.css';
-import Tabel from './components/Table';
+import StarWarsProvider from './contex/StarWarsProvider';
+import Home from './pages/Home';
 
 function App() {
   return (
-    <>
-      <h1>STARTWARS</h1>
-      <Tabel />
-    </>
+    <StarWarsProvider>
+      <Home />
+    </StarWarsProvider>
   );
 }
 
