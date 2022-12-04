@@ -9,7 +9,7 @@ describe('Testa o componente Table', () => {
       json: jest.fn().mockResolvedValue(testData)
     }))
   
-    it('Testa se todos os inputs e selects de filtros são renderizados', async () => {
+    it('Testa os inputs e selects ', async () => {
       render(<App />)
       const name = screen.getByTestId('name-filter')
       const column = screen.getByTestId('column-filter');
@@ -34,7 +34,7 @@ describe('Testa o componente Table', () => {
         expect(bespin).toBeInTheDocument();
       });
 
-      it('', async () => {
+      it('testando o maior que em população', async () => {
         render(<App />);
         await screen.findByText('Bespin');
 
@@ -58,5 +58,37 @@ describe('Testa o componente Table', () => {
         expect(rows).toHaveLength(3);
       });
 
+      it('testando o component Order', async () => {
+        render(<App />);
+        const inputAsc = screen.getByTestId('column-sort-input-asc')
+        const inputDes = screen.getByTestId('column-sort-input-desc')
+        const ordenar = screen.getByTestId('column-sort-button');
+        const columnSort = screen.getByTestId('column-sort')
+
+        userEvent.type(inputAsc, 'Acendente');
+        userEvent.type(inputDes, 'Descendente');
+        userEvent.type(ordenar, 'Ordenar');
+        userEvent.selectOptions(columnSort, 'diameter');
+      });
+
+      it('Testa o menor que em população', async () => {
+        render(<App />);
+        await screen.findByText('Bespin');
     
+        const column = screen.getByTestId('column-filter');
+        const comparasion = screen.getByTestId('comparison-filter');
+        const number = screen.getByTestId('value-filter');
+        const button = screen.getByTestId('button-filter');
+    
+        userEvent.selectOptions(column, 'population');
+        userEvent.selectOptions(comparasion, 'menor que');
+        userEvent.type(number, '3000');
+        userEvent.click(button);
+    
+        const yavinIV = await screen.findByText('Yavin IV');
+        const rows = screen.getAllByRole('row');
+    
+        expect(rows).toHaveLength(2)
+        expect(yavinIV).toBeInTheDocument();
+      });
 });
